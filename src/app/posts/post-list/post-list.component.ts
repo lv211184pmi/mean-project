@@ -1,28 +1,31 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 
-import * as fromPosts from '../store/post.reducer';
 import { Post } from '../posts.model';
+import { PostsService } from '../posts.service';
 
 @Component({
   selector: 'app-post-list',
   templateUrl: './post-list.component.html',
   styleUrls: ['./post-list.component.scss']
 })
-export class PostListComponent implements OnInit {
-
-  posts$: Post[] = [];
+export class PostListComponent implements OnInit, OnDestroy {
+  posts: Post[] = [];
+  postsSub: Subscription;
 
   constructor(
-    private store: Store<fromPosts.PostsState>
+    private postsService: PostsService
   ) { }
 
   ngOnInit() {
-    this.store.select('posts')
-      .subscribe(data => {
-        this.posts$ = data.posts;
+    this.postsService.getPosts();
+    this.postsSub = this.postsService.getUpdatedPostsListener()
+      .subscribe(newPosts => {
+        this.posts = newPosts;
       });
   }
 
+  ngOnDestroy(): void {
+    this.postsSub.unsubscribe();
+  }
 }

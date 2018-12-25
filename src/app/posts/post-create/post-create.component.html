@@ -10,10 +10,10 @@
         type="text"
         matInput
         placeholder="Post title *"
-        formControlName="postTitle">
-        <mat-error *ngIf="postsForm.get('postTitle').hasError('required') && postsForm.get('postTitle').touched"
+        formControlName="title">
+        <mat-error *ngIf="postsForm.get('title').hasError('required') && postsForm.get('title').touched"
         >Title is required...</mat-error>
-        <mat-error *ngIf="postsForm.get('postTitle').hasError('minLength') && postsForm.get('postTitle').touched"
+        <mat-error *ngIf="postsForm.get('title').hasError('minLength') && postsForm.get('title').touched"
         >Title can not be less 5 characters...</mat-error>
     </mat-form-field>
     <mat-form-field>
@@ -21,7 +21,7 @@
         matInput
         rows="6"
         placeholder="Post content"
-        formControlName="postContent"></textarea>
+        formControlName="content"></textarea>
     </mat-form-field>
     <button
       mat-raised-button

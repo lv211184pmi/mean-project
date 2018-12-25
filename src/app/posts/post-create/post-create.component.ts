@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
 import {
   FormGroup,
   FormControl,
@@ -8,8 +7,7 @@ import {
   FormBuilder,
 } from '@angular/forms';
 
-import * as fromPosts from '../store/post.reducer';
-import * as postsActions from '../store/posts.actions';
+import { PostsService } from './../posts.service';
 
 @Component({
   selector: 'app-post-create',
@@ -23,29 +21,27 @@ export class PostCreateComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private store: Store<fromPosts.PostsState>
+    private postsService: PostsService
   ) { }
 
   ngOnInit() {
     this.postsForm = this.fb.group({
-      postTitle: ['', [
+      title: ['', [
           Validators.required,
           Validators.minLength(5)
         ]
       ],
-      postContent: ['', Validators.minLength(5)]
+      content: ['', Validators.minLength(5)]
     });
   }
 
   addPost(form: FormGroup, formDirective) {
-    this.store.dispatch(
-      new postsActions.CreatePost(
-        {
-          title: form.value.postTitle,
-          content: form.value.postContent
-        }
-      ));
-      formDirective.resetForm();
-      this.postsForm.reset();
-    }
+    const post = Object.assign({}, form.value);
+    this.postsService.addPost(post)
+      .subscribe(data => {
+        this.postsService.posts.push(post);
+        this.postsService.postsUpdated.next([...this.postsService.posts]);
+    });
+    formDirective.resetForm();
+  }
 }
