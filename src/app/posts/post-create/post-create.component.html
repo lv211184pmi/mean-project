@@ -1,33 +1,61 @@
+<mat-spinner *ngIf="isLoaded"></mat-spinner>
 <form
   novalidate
   [formGroup]="postsForm"
   #formDirective="ngForm"
-  (ngSubmit)="addPost(postsForm, formDirective)"
->
+  *ngIf="!isLoaded"
+  >
   <mat-card>
     <mat-form-field>
       <input
-        type="text"
-        matInput
-        placeholder="Post title *"
-        formControlName="title">
-        <mat-error *ngIf="postsForm.get('title').hasError('required') && postsForm.get('title').touched"
-        >Title is required...</mat-error>
-        <mat-error *ngIf="postsForm.get('title').hasError('minLength') && postsForm.get('title').touched"
-        >Title can not be less 5 characters...</mat-error>
+      type="text"
+      matInput
+      placeholder="Post title *"
+      formControlName="title">
+      <mat-error *ngIf="postsForm.get('title').hasError('required') && postsForm.get('title').touched"
+      >Title is required...</mat-error>
+      <mat-error *ngIf="postsForm.get('title').hasError('minLength') && postsForm.get('title').touched"
+      >Title can not be less 5 characters...</mat-error>
     </mat-form-field>
+    <div>
+      <button
+        type="button"
+        mat-stroked-button
+        (click)="filePicker.click()"
+      >Pick image</button>
+      <input
+        type="file"
+        (change)="onImagePicked($event)"
+        #filePicker
+      >
+    </div>
+    <div class="image-preview" *ngIf="imagePreview && imagePreview !== ''">
+      <img [src]="imagePreview" [alt]="postsForm.value.title">
+    </div>
     <mat-form-field>
       <textarea
-        matInput
-        rows="6"
-        placeholder="Post content"
-        formControlName="content"></textarea>
+      matInput
+      rows="6"
+      placeholder="Post content"
+      formControlName="content"
+    ></textarea>
     </mat-form-field>
     <button
+    *ngIf="!this.postId; else editAction"
+    mat-raised-button
+    color="accent"
+    type="submit"
+    [disabled]="postsForm.invalid"
+    (click)="addPost(postsForm, formDirective)"
+    >Save Post</button>
+    <ng-template #editAction>
+      <button
       mat-raised-button
       color="accent"
       type="submit"
       [disabled]="postsForm.invalid"
-    >Save Post</button>
+      (click)="editPost(postsForm, formDirective)"
+      >Edit Post</button>
+    </ng-template>
   </mat-card>
 </form>
